@@ -1,0 +1,257 @@
+from PyQt5.QtWidgets import *
+from PyQt5 import QtCore, QtGui
+from PyQt5.QtGui import *
+from PyQt5.QtCore import *
+
+import sys
+
+class Window(QMainWindow):
+    def __init__(NCP):
+        super().__init__()
+        NCP.setWindowTitle('Number Conversion Practice - PyQt5')
+        NCP.setGeometry(150, 150, 300, 300)
+        NCP.win_display()
+        NCP.show()
+    
+    def win_display(display):
+        display.dec_label = QLabel('Decimal', display)
+        display.dec_label.move(30, 30)
+        display.dec_label.setFont(QFont('Arial', 10))
+        display.dec_label.setAlignment(QtCore.Qt.AlignCenter)
+
+        reg_exp_dec = QRegExp('\d{1,}')
+        display.dec_field = QLineEdit(display)
+        display.dec_field.setGeometry(125, 35, 125, 20)
+        display.dec_field.setValidator(QRegExpValidator(reg_exp_dec))
+
+        display.bin_label = QLabel('Binary', display)
+        display.bin_label.move(30, 80)
+        display.bin_label.setFont(QFont('Arial', 10))
+        display.bin_label.setAlignment(QtCore.Qt.AlignCenter)
+        
+        reg_exp_bin = QRegExp('[0-1]{1,}')
+        display.bin_field = QLineEdit(display)
+        display.bin_field.setGeometry(125, 85, 125, 20)
+        display.bin_field.setValidator(QRegExpValidator(reg_exp_bin))
+
+        display.hex_label = QLabel('Hexidecimal', display)
+        display.hex_label.move(30, 130)
+        display.hex_label.setFont(QFont('Arial', 10))
+        display.hex_label.setAlignment(QtCore.Qt.AlignCenter)
+
+        reg_exp_hex = QRegExp('[0-9a-fA-F]{1,}')
+        display.hex_field = QLineEdit(display)
+        display.hex_field.setGeometry(125, 135, 125, 20)
+        display.hex_field.setValidator(QRegExpValidator(reg_exp_hex))
+
+        display.oct_label = QLabel('Octal', display)
+        display.oct_label.move(30, 180)
+        display.oct_label.setFont(QFont('Arial', 10))
+        display.oct_label.setAlignment(QtCore.Qt.AlignCenter)
+
+        reg_exp_oct = QRegExp('[0-7]{1,}')
+        display.oct_field = QLineEdit(display)
+        display.oct_field.setGeometry(125, 185, 125, 20)
+        display.oct_field.setValidator(QRegExpValidator(reg_exp_oct))
+
+        display.convert = QPushButton('Convert', display)
+        display.convert.setGeometry(60, 240, 75, 20)
+        display.convert.setFont(QFont('Arial', 10))
+
+        display.convert.clicked.connect(display.convert_click)
+        display.dec_field.returnPressed.connect(display.convert_click)
+        display.bin_field.returnPressed.connect(display.convert_click)
+        display.hex_field.returnPressed.connect(display.convert_click)
+        display.oct_field.returnPressed.connect(display.convert_click)
+
+        display.reset = QPushButton('Reset', display)
+        display.reset.setGeometry(165, 240, 75, 20)
+        display.reset.setFont(QFont('Arial', 10))
+
+        display.reset.clicked.connect(display.dec_field.clear)
+        display.reset.clicked.connect(display.bin_field.clear)
+        display.reset.clicked.connect(display.hex_field.clear)
+        display.reset.clicked.connect(display.oct_field.clear)
+
+    def on_focusChanged(self, old, now):
+        if self.dec_field == now:
+            print('Yes')
+        elif self.dec_field == old:
+            print('No')
+        
+    def convert_click(con):
+        dec_value = con.dec_field.text()
+        bin_value = con.bin_field.text()
+        hex_value = con.hex_field.text()
+        oct_value = con.oct_field.text()
+
+        if dec_value == ''\
+            and bin_value == ''\
+                and hex_value == ''\
+                    and oct_value == '':
+            error_msg = QMessageBox()
+            error_msg.setWindowTitle('Error!')
+            error_msg.setText('Put an input!')
+
+            error_msg.exec_()
+
+        elif dec_value != None\
+            and bin_value == ''\
+                and hex_value == ''\
+                    and oct_value == '':
+            dec_value = int(con.dec_field.text())
+
+            dec_bin = bin(dec_value)
+            con.bin_field.setText(dec_bin.lstrip('0b'))
+
+            dec_hex = hex(dec_value)
+            con.hex_field.setText(dec_hex.lstrip('0x').upper())
+
+            dec_oct = oct(dec_value)
+            con.oct_field.setText(dec_oct.lstrip('0o'))
+
+            conv_dict['Dec'] = con.dec_field.text()
+            conv_dict['Bin'] = con.bin_field.text()
+            conv_dict['Hex'] = con.hex_field.text()
+            conv_dict['Oct'] = con.oct_field.text()
+
+        elif dec_value == ''\
+            and bin_value != None\
+                and hex_value == ''\
+                    and oct_value == '':
+            bin_dec = int(bin_value, 2)
+            con.dec_field.setText(str(bin_dec))
+
+            bin_hex = hex(bin_dec)
+            con.hex_field.setText(bin_hex.lstrip("0x").upper())
+
+            bin_oct = oct(bin_dec)
+            con.oct_field.setText(bin_oct.lstrip("0o"))
+
+            conv_dict['Dec'] = con.dec_field.text()
+            conv_dict['Bin'] = con.bin_field.text()
+            conv_dict['Hex'] = con.hex_field.text()
+            conv_dict['Oct'] = con.oct_field.text()
+
+        elif dec_value == ''\
+            and bin_value == ''\
+                and hex_value != None\
+                    and oct_value == '':          
+            hex_dec = int(hex_value, 16)
+            con.dec_field.setText(str(hex_dec))
+
+            hex_bin = bin(hex_dec)
+            con.bin_field.setText(hex_bin.lstrip("0b"))
+
+            hex_oct = oct(hex_dec)
+            con.oct_field.setText(hex_oct.lstrip("0o"))
+
+            conv_dict['Dec'] = con.dec_field.text()
+            conv_dict['Bin'] = con.bin_field.text()
+            conv_dict['Hex'] = con.hex_field.text()
+            conv_dict['Oct'] = con.oct_field.text()
+
+        elif dec_value == ''\
+            and bin_value == ''\
+                and hex_value == ''\
+                    and oct_value != None:
+            oct_dec = int(oct_value, 8)
+            con.dec_field.setText(str(oct_dec))
+
+            oct_bin = bin(oct_dec)
+            con.bin_field.setText(oct_bin.lstrip("0b"))
+
+            oct_hex = hex(oct_dec)
+            con.hex_field.setText(oct_hex.lstrip("0x").upper())
+
+            conv_dict['Dec'] = con.dec_field.text()
+            conv_dict['Bin'] = con.bin_field.text()
+            conv_dict['Hex'] = con.hex_field.text()
+            conv_dict['Oct'] = con.oct_field.text()
+
+        elif dec_value != conv_dict['Dec']\
+            and bin_value == conv_dict['Bin']\
+                and hex_value == conv_dict['Hex']\
+                    and oct_value == conv_dict['Oct']:
+            dec_value = int(con.dec_field.text())
+
+            dec_bin = bin(dec_value)
+            con.bin_field.setText(dec_bin.lstrip('0b'))
+
+            dec_hex = hex(dec_value)
+            con.hex_field.setText(dec_hex.lstrip('0x').upper())
+
+            dec_oct = oct(dec_value)
+            con.oct_field.setText(dec_oct.lstrip('0o'))
+
+            conv_dict['Dec'] = con.dec_field.text()
+            conv_dict['Bin'] = con.bin_field.text()
+            conv_dict['Hex'] = con.hex_field.text()
+            conv_dict['Oct'] = con.oct_field.text()
+
+        elif dec_value == conv_dict['Dec']\
+            and bin_value != conv_dict['Bin']\
+                and hex_value == conv_dict['Hex']\
+                    and oct_value == conv_dict['Oct']:
+            bin_dec = int(bin_value, 2)
+            con.dec_field.setText(str(bin_dec))
+
+            bin_hex = hex(bin_dec)
+            con.hex_field.setText(bin_hex.lstrip("0x").upper())
+
+            bin_oct = oct(bin_dec)
+            con.oct_field.setText(bin_oct.lstrip("0o"))
+
+            conv_dict['Dec'] = con.dec_field.text()
+            conv_dict['Bin'] = con.bin_field.text()
+            conv_dict['Hex'] = con.hex_field.text()
+            conv_dict['Oct'] = con.oct_field.text()
+
+        elif dec_value == conv_dict['Dec']\
+            and bin_value == conv_dict['Bin']\
+                and hex_value != conv_dict['Hex']\
+                    and oct_value == conv_dict['Oct']:
+            hex_dec = int(hex_value, 16)
+            con.dec_field.setText(str(hex_dec))
+
+            hex_bin = bin(hex_dec)
+            con.bin_field.setText(hex_bin.lstrip("0b"))
+
+            hex_oct = oct(hex_dec)
+            con.oct_field.setText(hex_oct.lstrip("0o"))
+
+            conv_dict['Dec'] = con.dec_field.text()
+            conv_dict['Bin'] = con.bin_field.text()
+            conv_dict['Hex'] = con.hex_field.text()
+            conv_dict['Oct'] = con.oct_field.text()
+
+        elif dec_value == conv_dict['Dec']\
+            and bin_value == conv_dict['Bin']\
+                and hex_value == conv_dict['Hex']\
+                    and oct_value != conv_dict['Oct']:
+            oct_dec = int(oct_value, 8)
+            con.dec_field.setText(str(oct_dec))
+
+            oct_bin = bin(oct_dec)
+            con.bin_field.setText(oct_bin.lstrip("0b"))
+
+            oct_hex = hex(oct_dec)
+            con.hex_field.setText(oct_hex.lstrip("0x").upper())
+
+            conv_dict['Dec'] = con.dec_field.text()
+            conv_dict['Bin'] = con.bin_field.text()
+            conv_dict['Hex'] = con.hex_field.text()
+            conv_dict['Oct'] = con.oct_field.text()
+        
+NCP_PyQt5 = QApplication(sys.argv)
+
+conv_dict = {
+    'Dec': {},
+    'Bin': {},
+    'Hex': {},
+    'Oct': {}
+}
+
+window = Window()
+
+sys.exit(NCP_PyQt5.exec())
